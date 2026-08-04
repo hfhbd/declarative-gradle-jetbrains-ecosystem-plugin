@@ -377,8 +377,8 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 """
                 |package org.example
                 |
-                |val kotlin10Release = kotlin.time.Instant.parse("2011-07-22T00:00:00Z")
-                |val kotlin20Release = kotlin.time.Instant.parse("2024-05-21T00:00:00Z")
+                |val kotlin10Release = kotlin.time.Instant.parse("2016-02-15T00:00:00Z")
+                |val kotlin20Release = kotlin.time.Instant.parse("2024-05-23T00:00:00Z")
                 |
                 """.trimMargin()
             }
@@ -399,7 +399,7 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 |     @Test
                 |     fun testOne() = runTest {
                 |          val clock = testTimeSource.asClock(origin = kotlin10Release)
-                |          delay(4_687.days)
+                |          delay(3_020.days)
                 |          assertEquals(kotlin20Release, clock.now())
                 |     }
                 |}
