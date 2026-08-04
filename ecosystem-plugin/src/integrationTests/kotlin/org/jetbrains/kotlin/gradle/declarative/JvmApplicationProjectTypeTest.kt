@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import kotlin.io.path.writeText
 
 @DisplayName("'jvmApplication' project type")

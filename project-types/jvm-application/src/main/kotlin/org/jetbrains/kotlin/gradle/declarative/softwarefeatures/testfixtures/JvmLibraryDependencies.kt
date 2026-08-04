@@ -14,7 +14,6 @@ public interface JvmLibraryDependencies : JvmComponentDependencies {
      * `api` dependencies are used at compilation and runtime.
      *
      * @return a [org.gradle.api.artifacts.dsl.DependencyCollector] that collects the set of api dependencies
-     * @since 9.4.0
      */
     public val api: DependencyCollector
 
@@ -25,7 +24,6 @@ public interface JvmLibraryDependencies : JvmComponentDependencies {
      * `compileOnlyApi` dependencies are used only at compilation and are not available at runtime.
      *
      * @return a [org.gradle.api.artifacts.dsl.DependencyCollector] that collects the set of compile-only api dependencies
-     * @since 9.4.0
      */
     public val compileOnlyApi: DependencyCollector
 }
