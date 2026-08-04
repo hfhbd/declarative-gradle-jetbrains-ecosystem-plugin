@@ -9,11 +9,11 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
-import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import kotlin.io.path.writeText
 
 @DisplayName("'jvmApplication' project type")
@@ -333,6 +333,76 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 |     fun testOne() {
                 |          assertEquals(1, 0 + 1)
                 |     }    
+                |}
+                """.trimMargin()
+            }
+
+            build("test") {
+                assertTasksExecuted(":compileKotlin", ":compileTestKotlin", ":test")
+            }
+        }
+    }
+
+    @DisplayName("testFixtures are possible to configure")
+    @GradleTest
+    fun testTestFixtures(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.SerializationKt"
+                |    
+                |    testFixtures {
+                |        dependencies {
+                |            api("org.jetbrains.kotlinx:kotlinx-coroutines-test:${TestVersions.Dependencies.COROUTINES}")
+                |        }
+                |    }
+                |    
+                |    testing {
+                |        useJUnitPlatform = true
+                |        dependencies {
+                |            implementation(platform("org.junit:junit-bom:5.14.3"))
+	            |            implementation("org.junit.jupiter:junit-jupiter")
+	            |            runtimeOnly("org.junit.platform:junit-platform-launcher")
+                |        }
+                |    } 
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("testFixtures").source("org/example/TestData.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |val kotlin10Release = kotlin.time.Instant.parse("2011-07-22T00:00:00Z")
+                |val kotlin20Release = kotlin.time.Instant.parse("2024-05-21T00:00:00Z")
+                |
+                """.trimMargin()
+            }
+            kotlinSourcesDir("test").source("org/example/Test.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import org.junit.jupiter.api.Test
+                |import org.junit.jupiter.api.Assertions.assertEquals
+                |import kotlin.time.asClock
+                |import kotlin.time.Duration.Companion.days
+                |import kotlinx.coroutines.test.runTest
+                |import kotlinx.coroutines.test.testTimeSource
+                |import kotlinx.coroutines.delay
+                |
+                |class OneTest {
+                |     @Test
+                |     fun testOne() = runTest {
+                |          val clock = testTimeSource.asClock(origin = kotlin10Release)
+                |          delay(4_687.days)
+                |          assertEquals(kotlin20Release, clock.now())
+                |     }
                 |}
                 """.trimMargin()
             }
